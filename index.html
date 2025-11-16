@@ -52,13 +52,44 @@
             max-height: 2000px;
             transition: max-height 0.5s ease-in;
         }
+
+        /* Custom notification styles */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .notification-enter {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-enter {
+            animation: fadeIn 0.2s ease-out;
+        }
     </style>
 </head>
 
 <body class="p-4 sm:p-8 flex justify-center items-start min-h-screen">
     <div class="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-xl shadow-2xl transition-all duration-300 mt-12 sm:mt-0">
         <h1 class="text-4xl font-extrabold text-indigo-700 mb-2">CGPA Calculator</h1>
-        <p class="text-gray-500 mb-6">Simulate your projected CGPA by including new courses and dropping old ones.</p>
+        <p class="text-gray-500 mb-6">Simulate your projected CGPA by adding new courses or dropping old ones.</p>
 
         <div class="space-y-4 mb-8 p-6 bg-indigo-50 rounded-xl border border-indigo-200">
             <h2 class="text-xl font-semibold text-indigo-800">Current CGPA</h2>
@@ -158,8 +189,25 @@
         <div id="result-box" class="mt-8 p-8 rounded-xl bg-gray-900 text-white text-center shadow-inner hidden">
             <p class="text-lg font-medium opacity-80">Your New Projected CGPA is:</p>
             <p id="newCGPAValue" class="text-6xl font-extrabold text-yellow-400 mt-1">--</p>
-            <p class="text-lg font-medium opacity-80 mt-4">New Total Credit Hours:</p>
+
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div class="p-3 bg-green-800 bg-opacity-30 rounded-lg border border-green-600">
+                    <p class="text-xs text-green-300 font-medium">Credits Added</p>
+                    <p id="addedCH" class="text-2xl font-bold text-green-400">--</p>
+                </div>
+                <div class="p-3 bg-red-800 bg-opacity-30 rounded-lg border border-red-600">
+                    <p class="text-xs text-red-300 font-medium">Credits Dropped</p>
+                    <p id="droppedCH" class="text-2xl font-bold text-red-400">--</p>
+                </div>
+                <div class="p-3 bg-blue-800 bg-opacity-30 rounded-lg border border-blue-600">
+                    <p class="text-xs text-blue-300 font-medium">Net Change</p>
+                    <p id="netChangeCH" class="text-2xl font-bold text-blue-400">--</p>
+                </div>
+            </div>
+
+            <p class="text-lg font-medium opacity-80 mt-6">New Total Credit Hours:</p>
             <p id="newTotalCHValue" class="text-4xl font-bold text-gray-200 mt-1">--</p>
+
             <p id="message" class="mt-4 text-sm italic text-gray-300"></p>
         </div>
 
@@ -200,7 +248,7 @@
                                     d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
-                        <div id="select-section" class="accordion-content active">
+                        <div id="select-section" class="accordion-content">
                             <div class="p-4 bg-white">
                                 <p class="text-sm text-gray-600 mb-4">⚠️ Switching scales will clear all entered
                                     subjects.</p>
@@ -215,16 +263,19 @@
 
                     <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
                         <button onclick="toggleAccordion('create-section')"
-                            class="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 transition-colors">
+                            class="w-full flex items-center justify-between p-4 bg-green-50 hover:bg-green-100 transition-colors">
                             <div class="flex items-center gap-2">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 4v16m8-8H4"></path>
                                 </svg>
                                 <h3 class="text-lg font-semibold text-gray-800">Create New Scale</h3>
                             </div>
                             <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                         <div id="create-section" class="accordion-content">
@@ -232,18 +283,18 @@
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Scale Name</label>
                                     <input type="text" id="new-scale-name" placeholder="e.g., My University Scale"
-                                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500">
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
                                     <div id="new-scale-grades" class="space-y-2 mb-3"></div>
                                     <button onclick="addGradeToNewScale()"
-                                        class="w-full py-2 px-4 border-2 border-dashed border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium">
+                                        class="w-full py-2 px-4 border-2 border-dashed border-green-300 text-green-600 hover:bg-green-50 rounded-lg transition-colors font-medium">
                                         + Add Grade
                                     </button>
                                 </div>
                                 <button onclick="saveNewScale()"
-                                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                    class="w-full py-2 px-4 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
                                     Save New Scale
                                 </button>
                             </div>
@@ -318,68 +369,173 @@
         </div>
     </div>
 
+    <div id="notification-container" class="fixed bottom-4 right-4 z-50 space-y-3 pointer-events-none">
+    </div>
+
     <script>
         let subjectCount = 0;
         let currentEditingScaleId = null;
-        
         const STORAGE_KEY = 'cgpaScalesData';
 
-               const DEFAULT_SCALES = [
-                {
-                    id: 'utar',
-                    name: 'Universiti Tunku Abdul Rahman (UTAR)',
-                    isDefault: true,
-                    grades: [
-                        { name: 'A+', points: 4.00 },
-                        { name: 'A', points: 4.00 },
-                        { name: 'A-', points: 3.67 },
-                        { name: 'B+', points: 3.33 },
-                        { name: 'B', points: 3.00 },
-                        { name: 'B-', points: 2.67 },
-                        { name: 'C+', points: 2.33 },
-                        { name: 'C', points: 2.00 },
-                        { name: 'F', points: 0.00 }
-                    ]
-                },
-                {
-                    id: 'um',
-                    name: 'Universiti Malaya (UM)',
-                    isDefault: false,
-                    grades: [
-                        { name: 'A+', points: 4.00 },
-                        { name: 'A', points: 4.00 },
-                        { name: 'A-', points: 3.70 },
-                        { name: 'B+', points: 3.30 },
-                        { name: 'B', points: 3.00 },
-                        { name: 'B-', points: 2.70 },
-                        { name: 'C+', points: 2.30 },
-                        { name: 'C', points: 2.00 },
-                        { name: 'C-', points: 1.7 },
-                        { name: 'D+', points: 1.3 },
-                        { name: 'D', points: 1.00 },
-                        { name: 'F', points: 0.00 }
-                    ]
-                },
-                {
-                    id: 'usm',
-                    name: 'Universiti Sains Malaysia (USM)',
-                    isDefault: false,
-                    grades: [
-                        { name: 'A', points: 4.00 },
-                        { name: 'A-', points: 3.67 },
-                        { name: 'B+', points: 3.33 },
-                        { name: 'B', points: 3.00 },
-                        { name: 'B-', points: 2.67 },
-                        { name: 'C+', points: 2.33 },
-                        { name: 'C', points: 2.00 },
-                        { name: 'C-', points: 1.67 },
-                        { name: 'D+', points: 1.33 },
-                        { name: 'D', points: 1.00 },
-                        { name: 'D-', points: 0.67 },
-                        { name: 'F', points: 0.00 }
-                    ]
-                } 
-            ];
+        // Custom notification and confirmation
+        let confirmationResolver = null;
+
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+
+            const icons = {
+                success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>',
+                error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>',
+                warning: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>',
+                info: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
+            };
+
+            notification.className = `${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 notification-enter max-w-md`;
+            notification.innerHTML = `
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${icons[type]}
+                </svg>
+                <span class="flex-1 text-sm font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="flex-shrink-0 hover:bg-white hover:bg-opacity-20 rounded p-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+
+            container.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.3s';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        function showConfirmation(title, message, type = 'warning') {
+            return new Promise((resolve) => {
+                confirmationResolver = resolve;
+                const modal = document.getElementById('confirmation-modal');
+                const icon = document.getElementById('confirm-icon');
+                const titleEl = document.getElementById('confirm-title');
+                const messageEl = document.getElementById('confirm-message');
+                const okBtn = document.getElementById('confirm-ok');
+
+                const configs = {
+                    warning: {
+                        bgColor: 'bg-yellow-100',
+                        iconColor: 'text-yellow-600',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>',
+                        btnColor: 'bg-yellow-600 hover:bg-yellow-700'
+                    },
+                    danger: {
+                        bgColor: 'bg-red-100',
+                        iconColor: 'text-red-600',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>',
+                        btnColor: 'bg-red-600 hover:bg-red-700'
+                    },
+                    info: {
+                        bgColor: 'bg-blue-100',
+                        iconColor: 'text-blue-600',
+                        icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
+                        btnColor: 'bg-blue-600 hover:bg-blue-700'
+                    }
+                };
+
+                const config = configs[type];
+                icon.className = `flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${config.bgColor}`;
+                icon.innerHTML = `<svg class="w-6 h-6 ${config.iconColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${config.icon}</svg>`;
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+                okBtn.className = `flex-1 py-2 px-4 ${config.btnColor} text-white font-medium rounded-lg transition-colors`;
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.classList.add('modal-open');
+            });
+        }
+
+        function resolveConfirmation(result) {
+            const modal = document.getElementById('confirmation-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.classList.remove('modal-open');
+            if (confirmationResolver) {
+                confirmationResolver(result);
+                confirmationResolver = null;
+            }
+        }
+
+        function closeConfirmationModal(event) {
+            if (event.target.id === 'confirmation-modal') {
+                resolveConfirmation(false);
+            }
+        }
+
+        const DEFAULT_SCALES = [
+            {
+                id: 'utar',
+                name: 'Universiti Tunku Abdul Rahman (UTAR)',
+                isDefault: true,
+                grades: [
+                    { name: 'A+', points: 4.00 },
+                    { name: 'A', points: 4.00 },
+                    { name: 'A-', points: 3.67 },
+                    { name: 'B+', points: 3.33 },
+                    { name: 'B', points: 3.00 },
+                    { name: 'B-', points: 2.67 },
+                    { name: 'C+', points: 2.33 },
+                    { name: 'C', points: 2.00 },
+                    { name: 'F', points: 0.00 }
+                ]
+            },
+            {
+                id: 'um',
+                name: 'Universiti Malaya (UM)',
+                isDefault: false,
+                grades: [
+                    { name: 'A+', points: 4.00 },
+                    { name: 'A', points: 4.00 },
+                    { name: 'A-', points: 3.70 },
+                    { name: 'B+', points: 3.30 },
+                    { name: 'B', points: 3.00 },
+                    { name: 'B-', points: 2.70 },
+                    { name: 'C+', points: 2.30 },
+                    { name: 'C', points: 2.00 },
+                    { name: 'C-', points: 1.7 },
+                    { name: 'D+', points: 1.3 },
+                    { name: 'D', points: 1.00 },
+                    { name: 'F', points: 0.00 }
+                ]
+            },
+            {
+                id: 'usm',
+                name: 'Universiti Sains Malaysia (USM)',
+                isDefault: false,
+                grades: [
+                    { name: 'A', points: 4.00 },
+                    { name: 'A-', points: 3.67 },
+                    { name: 'B+', points: 3.33 },
+                    { name: 'B', points: 3.00 },
+                    { name: 'B-', points: 2.67 },
+                    { name: 'C+', points: 2.33 },
+                    { name: 'C', points: 2.00 },
+                    { name: 'C-', points: 1.67 },
+                    { name: 'D+', points: 1.33 },
+                    { name: 'D', points: 1.00 },
+                    { name: 'D-', points: 0.67 },
+                    { name: 'F', points: 0.00 }
+                ]
+            }
+        ];
 
         function initializeLocalStorage() {
             try {
@@ -409,7 +565,7 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
                 return true;
             } catch (e) {
-                alert('Failed to save data. localStorage might be disabled.');
+                showNotification('Failed to save data. localStorage might be disabled.', 'error');
                 return false;
             }
         }
@@ -597,23 +753,22 @@
         function applySelectedScale() {
             const selected = document.querySelector('input[name="scale-select"]:checked');
             if (!selected) {
-                alert('Please select a scale.');
+                showNotification('Please select a scale.', 'warning');
                 return;
             }
 
             const data = getScalesData();
             if (selected.value === data.activeScaleId) {
-                alert('This scale is already active.');
+                showNotification('This scale is already active.', 'info');
                 return;
             }
 
-            if (confirm('Switching scales will clear all entered subjects. Continue?')) {
-                setActiveScale(selected.value);
-                updateGradeScalePreview();
-                clearAllSubjects();
-                closeScaleModal();
-                alert('Grade scale updated successfully!');
-            }
+            // Apply directly without confirmation
+            setActiveScale(selected.value);
+            updateGradeScalePreview();
+            clearAllSubjects();
+            closeScaleModal();
+            showNotification('Grade scale updated successfully!', 'success');
         }
 
         function clearAllSubjects() {
@@ -662,7 +817,7 @@
         function saveNewScale() {
             const name = document.getElementById('new-scale-name').value.trim();
             if (!name) {
-                alert('Please enter a scale name.');
+                showNotification('Please enter a scale name.', 'warning');
                 return;
             }
 
@@ -675,12 +830,12 @@
                 const gradePoints = parseFloat(elem.querySelector('.new-grade-points').value);
 
                 if (!gradeName || isNaN(gradePoints)) {
-                    alert('Please fill in all grade names and points.');
+                    showNotification('Please fill in all grade names and points.', 'warning');
                     return;
                 }
 
                 if (gradeNames.has(gradeName)) {
-                    alert(`Duplicate grade name: ${gradeName}`);
+                    showNotification(`Duplicate grade name: ${gradeName}`, 'error');
                     return;
                 }
 
@@ -689,7 +844,7 @@
             }
 
             if (grades.length === 0) {
-                alert('Please add at least one grade.');
+                showNotification('Please add at least one grade.', 'warning');
                 return;
             }
 
@@ -706,7 +861,7 @@
             data.scales.push(newScale);
             saveScalesData(data);
 
-            alert('New scale created successfully!');
+            showNotification('New scale created successfully!', 'success');
             resetCreateForm();
             populateScaleList();
             populateEditDropdown();
@@ -787,7 +942,7 @@
 
             const name = document.getElementById('edit-scale-name').value.trim();
             if (!name) {
-                alert('Please enter a scale name.');
+                showNotification('Please enter a scale name.', 'warning');
                 return;
             }
 
@@ -800,12 +955,12 @@
                 const gradePoints = parseFloat(elem.querySelector('.edit-grade-points').value);
 
                 if (!gradeName || isNaN(gradePoints)) {
-                    alert('Please fill in all grade names and points.');
+                    showNotification('Please fill in all grade names and points.', 'warning');
                     return;
                 }
 
                 if (gradeNames.has(gradeName)) {
-                    alert(`Duplicate grade name: ${gradeName}`);
+                    showNotification(`Duplicate grade name: ${gradeName}`, 'error');
                     return;
                 }
 
@@ -814,7 +969,7 @@
             }
 
             if (grades.length === 0) {
-                alert('Please add at least one grade.');
+                showNotification('Please add at least one grade.', 'warning');
                 return;
             }
 
@@ -831,9 +986,9 @@
                 if (currentEditingScaleId === data.activeScaleId) {
                     updateGradeScalePreview();
                     clearAllSubjects();
-                    alert('Scale updated successfully! All entered subjects have been cleared.');
+                    showNotification('Scale updated! All entered subjects have been cleared.', 'success');
                 } else {
-                    alert('Scale updated successfully!');
+                    showNotification('Scale updated successfully!', 'success');
                 }
 
                 populateScaleList();
@@ -843,12 +998,16 @@
             }
         }
 
-        function deleteScale() {
+        async function deleteScale() {
             if (!currentEditingScaleId) return;
 
-            if (!confirm('Are you sure you want to delete this scale? This action cannot be undone.')) {
-                return;
-            }
+            const confirmed = await showConfirmation(
+                'Delete Scale',
+                'Are you sure you want to delete this scale? This action cannot be undone.',
+                'danger'
+            );
+
+            if (!confirmed) return;
 
             const data = getScalesData();
             const scaleIndex = data.scales.findIndex(s => s.id === currentEditingScaleId);
@@ -864,7 +1023,10 @@
                 }
 
                 saveScalesData(data);
-                alert('Scale deleted successfully!' + (wasActive ? ' Switched to first available scale.' : ''));
+                showNotification(
+                    'Scale deleted successfully!' + (wasActive ? ' Switched to first available scale.' : ''),
+                    'success'
+                );
 
                 populateScaleList();
                 populateEditDropdown();
@@ -916,8 +1078,18 @@
             const currentCGPA = parseFloat(currentCGPAInput.value);
             const currentTotalCH = parseInt(currentTotalCHInput.value);
 
+            // Validation: Current CGPA and Credit Hours
             if (!currentCGPAInput.checkValidity() || !currentTotalCHInput.checkValidity() || isNaN(currentCGPA) || isNaN(currentTotalCH)) {
                 document.getElementById('error-message').innerHTML = "Please ensure your Current CGPA and Total Credit Hours are valid numbers.";
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            // Validation: CGPA cannot exceed maximum of active scale
+            const activeScale = getActiveScale();
+            const maxGradePoint = Math.max(...activeScale.grades.map(g => g.points));
+            if (currentCGPA > maxGradePoint) {
+                document.getElementById('error-message').innerHTML = `Current CGPA (${currentCGPA.toFixed(2)}) cannot exceed the maximum grade point (${maxGradePoint.toFixed(2)}) in your selected scale.`;
                 document.getElementById('error-message').classList.remove('hidden');
                 return;
             }
@@ -932,39 +1104,84 @@
             }
 
             const currentTotalQP = currentCGPA * currentTotalCH;
+
+            // Enhanced Validation: Check if dropping is valid
+            if (dropped.ch > currentTotalCH) {
+                document.getElementById('error-message').innerHTML = `Cannot drop ${dropped.ch} credit hours when you only have ${currentTotalCH} total credit hours.`;
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            // Enhanced Validation: Check if dropping quality points exceeds available
+            if (dropped.qp > currentTotalQP) {
+                document.getElementById('error-message').innerHTML = `Warning: The quality points you're trying to drop (${dropped.qp.toFixed(2)}) exceed your current total quality points (${currentTotalQP.toFixed(2)}). This suggests the dropped subjects had higher grades than your current average. Please verify your entries.`;
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            // Calculate new totals
             const newTotalCH = currentTotalCH - dropped.ch + added.ch;
             const newTotalQP = currentTotalQP - dropped.qp + added.qp;
 
             let newCGPA;
 
-            if (newTotalCH <= 0 && newTotalQP > 0) {
-                document.getElementById('error-message').innerHTML = "Error: The resulting total credit hours is zero or negative.";
+            // Validation: Resulting credit hours
+            if (newTotalCH < 0) {
+                document.getElementById('error-message').innerHTML = "Error: The resulting total credit hours is negative. You cannot drop more credits than you add.";
                 document.getElementById('error-message').classList.remove('hidden');
                 return;
             }
-            if (newTotalCH === 0 && newTotalQP === 0) {
-                newCGPA = 0;
+
+            if (newTotalCH === 0) {
+                if (newTotalQP === 0) {
+                    newCGPA = 0;
+                } else {
+                    document.getElementById('error-message').innerHTML = "Error: Cannot have quality points without credit hours.";
+                    document.getElementById('error-message').classList.remove('hidden');
+                    return;
+                }
             } else {
                 newCGPA = newTotalQP / newTotalCH;
             }
 
+            // Validation: New CGPA shouldn't exceed max scale
+            if (newCGPA > maxGradePoint + 0.01) { // Small tolerance for floating point
+                document.getElementById('error-message').innerHTML = `Calculated CGPA (${newCGPA.toFixed(4)}) exceeds maximum possible (${maxGradePoint.toFixed(2)}). Please check your inputs.`;
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            // Display Results with enhanced details
             const resultBox = document.getElementById('result-box');
             const newCGPAValue = document.getElementById('newCGPAValue');
             const newTotalCHValue = document.getElementById('newTotalCHValue');
+            const addedCHEl = document.getElementById('addedCH');
+            const droppedCHEl = document.getElementById('droppedCH');
+            const netChangeCHEl = document.getElementById('netChangeCH');
             const messageElement = document.getElementById('message');
 
             newCGPAValue.textContent = newCGPA.toFixed(4);
             newTotalCHValue.textContent = newTotalCH;
+            addedCHEl.textContent = `+${added.ch}`;
+            droppedCHEl.textContent = `-${dropped.ch}`;
+
+            const netChange = added.ch - dropped.ch;
+            netChangeCHEl.textContent = netChange >= 0 ? `+${netChange}` : `${netChange}`;
 
             if (newCGPA > currentCGPA) {
-                messageElement.textContent = `Excellent! Your CGPA improved by +${(newCGPA - currentCGPA).toFixed(4)}!`;
+                const improvement = newCGPA - currentCGPA;
+                messageElement.textContent = `Excellent! Your CGPA improved by +${improvement.toFixed(4)} (${((improvement / currentCGPA) * 100).toFixed(2)}%)`;
             } else if (newCGPA < currentCGPA) {
-                messageElement.textContent = `Your projected CGPA changed by ${(newCGPA - currentCGPA).toFixed(4)}.`;
+                const decline = currentCGPA - newCGPA;
+                messageElement.textContent = `Your CGPA decreased by -${decline.toFixed(4)} (${((decline / currentCGPA) * 100).toFixed(2)}%)`;
             } else {
-                messageElement.textContent = "The net change from dropping and adding subjects was zero.";
+                messageElement.textContent = "Your CGPA remains unchanged.";
             }
 
             resultBox.classList.remove('hidden');
+
+            // Scroll to results
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         window.onload = function () {
