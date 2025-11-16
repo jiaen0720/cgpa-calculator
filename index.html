@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+
+        input:invalid:not(:placeholder-shown) {
+            border-color: #ef4444;
+        }
+
+        .input-field {
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+            border-color: #6366f1;
+        }
+
+        .hint-text {
+            display: block;
+        }
+
+        .tight-input {
+            padding: 0.5rem;
+        }
+
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .accordion-content.active {
+            max-height: 2000px;
+            transition: max-height 0.5s ease-in;
+        }
+    </style>
+</head>
+
+<body class="p-4 sm:p-8 flex justify-center items-start min-h-screen">
+    <div class="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-xl shadow-2xl transition-all duration-300 mt-12 sm:mt-0">
+        <h1 class="text-4xl font-extrabold text-indigo-700 mb-2">CGPA Calculator</h1>
+        <p class="text-gray-500 mb-6">Simulate your projected CGPA by including new courses and dropping old ones.</p>
+
+        <div class="space-y-4 mb-8 p-6 bg-indigo-50 rounded-xl border border-indigo-200">
+            <h2 class="text-xl font-semibold text-indigo-800">Current CGPA</h2>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <div class="flex-1">
+                    <label for="currentCGPA" class="block text-sm font-medium text-gray-700">Current CGPA</label>
+                    <input type="number" id="currentCGPA" value="0" step="0.0001" min="0" max="4.0" required
+                        class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
+                </div>
+                <div class="flex-1">
+                    <label for="currentTotalCH" class="block text-sm font-medium text-gray-700">Total Credit
+                        Hours</label>
+                    <input type="number" id="currentTotalCH" value="0" step="1" min="0" required
+                        class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
+                </div>
+            </div>
+
+            <div class="p-3 bg-amber-100 rounded-lg text-sm border border-amber-300">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 pr-2">
+                        <p class="font-semibold mb-1 text-amber-800">Grade Point Scale: <span
+                                id="active-scale-name">Loading...</span></p>
+                        <p id="grade-scale-preview" class="text-xs text-gray-700">Loading grades...</p>
+                    </div>
+                    <button onclick="openScaleModal()"
+                        class="flex-shrink-0 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded-md transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="hidden sm:inline">Manage</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Subjects to ADD</h2>
+            <button onclick="addNewSubjectRow()"
+                class="w-full py-2 px-4 border border-blue-300 rounded-lg shadow-sm text-sm font-medium text-blue-700 bg-white hover:bg-blue-50 transition flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Add New Subject
+            </button>
+            <div id="subjects-to-add-container" class="space-y-4 p-4 border border-blue-200 rounded-xl bg-blue-50">
+                <div id="add-header"
+                    class="hidden flex items-center space-x-2 text-xs font-semibold text-gray-700 mb-2 px-3 pt-1 border-b border-blue-200 pb-1">
+                    <div class="w-8 flex-shrink-0 text-center">#</div>
+                    <div class="hidden sm:block flex-1 min-w-[80px] text-left">Subject Name (Optional)</div>
+                    <div class="w-24 sm:w-28 flex-shrink-0 text-center">Grade (GP)</div>
+                    <div class="w-14 sm:w-16 flex-shrink-0 text-center">Credit Hours</div>
+                    <div class="w-9 flex-shrink-0"></div>
+                </div>
+                <div id="add-hint" class="hint-text text-center py-6 text-blue-500 font-medium italic">
+                    Click "Add New Subject" above to include projected grades.
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Subjects to DROP</h2>
+            <button onclick="addDropSubjectRow()"
+                class="w-full py-2 px-4 border border-red-300 rounded-lg shadow-sm text-sm font-medium text-red-700 bg-white hover:bg-red-50 transition flex items-center justify-center mb-4">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Add Subject to Drop
+            </button>
+            <div id="subjects-to-drop-container" class="space-y-4 p-4 border border-red-200 rounded-xl bg-red-50">
+                <div id="drop-header"
+                    class="hidden flex items-center space-x-2 text-xs font-semibold text-gray-700 mb-2 px-3 pt-1 border-b border-red-200 pb-1">
+                    <div class="w-8 flex-shrink-0 text-center">#</div>
+                    <div class="hidden sm:block flex-1 min-w-[80px] text-left">Subject Name (Optional)</div>
+                    <div class="w-24 sm:w-28 flex-shrink-0 text-center">Grade (GP)</div>
+                    <div class="w-14 sm:w-16 flex-shrink-0 text-center">Credit Hours</div>
+                    <div class="w-9 flex-shrink-0"></div>
+                </div>
+                <div id="drop-hint" class="hint-text text-center py-6 text-red-500 font-medium italic">
+                    Click "Add Subject to Drop" above to remove old grades and credits.
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-center mb-6">
+            <button onclick="calculateCGPA()"
+                class="py-3 px-10 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xl rounded-xl shadow-xl transform transition hover:scale-[1.005] focus:outline-none focus:ring-4 focus:ring-indigo-400 w-full">
+                Calculate CGPA
+            </button>
+        </div>
+
+        <div id="result-box" class="mt-8 p-8 rounded-xl bg-gray-900 text-white text-center shadow-inner hidden">
+            <p class="text-lg font-medium opacity-80">Your New Projected CGPA is:</p>
+            <p id="newCGPAValue" class="text-6xl font-extrabold text-yellow-400 mt-1">--</p>
+            <p class="text-lg font-medium opacity-80 mt-4">New Total Credit Hours:</p>
+            <p id="newTotalCHValue" class="text-4xl font-bold text-gray-200 mt-1">--</p>
+            <p id="message" class="mt-4 text-sm italic text-gray-300"></p>
+        </div>
+
+        <div id="error-message" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden">
+            Please fill in all required fields.
+        </div>
+    </div>
+
+    <div id="scale-modal" class="fixed inset-0 z-50 hidden modal-backdrop" onclick="closeModalOnBackdrop(event)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col"
+                onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Manage Grade Scales</h2>
+                    <button onclick="closeScaleModal()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="overflow-y-auto flex-1 p-4 sm:p-6">
+                    <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button onclick="toggleAccordion('select-section')"
+                            class="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800">Select Active Scale</h3>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="select-section" class="accordion-content active">
+                            <div class="p-4 bg-white">
+                                <p class="text-sm text-gray-600 mb-4">⚠️ Switching scales will clear all entered
+                                    subjects.</p>
+                                <div id="scale-list" class="space-y-2 mb-4"></div>
+                                <button onclick="applySelectedScale()"
+                                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                    Apply Selected Scale
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button onclick="toggleAccordion('create-section')"
+                            class="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800">Create New Scale</h3>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="create-section" class="accordion-content">
+                            <div class="p-4 bg-white">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Scale Name</label>
+                                    <input type="text" id="new-scale-name" placeholder="e.g., My University Scale"
+                                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
+                                    <div id="new-scale-grades" class="space-y-2 mb-3"></div>
+                                    <button onclick="addGradeToNewScale()"
+                                        class="w-full py-2 px-4 border-2 border-dashed border-blue-300 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors font-medium">
+                                        + Add Grade
+                                    </button>
+                                </div>
+                                <button onclick="saveNewScale()"
+                                    class="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+                                    Save New Scale
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                        <button onclick="toggleAccordion('edit-section')"
+                            class="w-full flex items-center justify-between p-4 bg-orange-50 hover:bg-orange-100 transition-colors">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800">Edit/Delete Scales</h3>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="edit-section" class="accordion-content">
+                            <div class="p-4 bg-white">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Select Scale to
+                                        Edit/Delete</label>
+                                    <select id="edit-scale-select" onchange="loadScaleForEdit()"
+                                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                                        <option value="">-- Choose a scale --</option>
+                                    </select>
+                                </div>
+                                <div id="edit-scale-form" class="hidden">
+                                    <div id="default-scale-notice"
+                                        class="hidden p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg mb-4 text-sm">
+                                        ⚠️ Cannot edit or delete default scales.
+                                    </div>
+                                    <div id="edit-scale-inputs" class="hidden">
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Scale
+                                                Name</label>
+                                            <input type="text" id="edit-scale-name"
+                                                class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500">
+                                        </div>
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
+                                            <div id="edit-scale-grades" class="space-y-2 mb-3"></div>
+                                            <button onclick="addGradeToEditScale()"
+                                                class="w-full py-2 px-4 border-2 border-dashed border-orange-300 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors font-medium">
+                                                + Add Grade
+                                            </button>
+                                        </div>
+                                        <div class="flex flex-col sm:flex-row gap-2">
+                                            <button onclick="saveEditedScale()"
+                                                class="flex-1 py-2 px-4 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition-colors">
+                                                Save Changes
+                                            </button>
+                                            <button onclick="deleteScale()"
+                                                class="flex-1 py-2 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
+                                                Delete Scale
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let subjectCount = 0;
+        let currentEditingScaleId = null;
+        const STORAGE_KEY = 'cgpaScalesData';
+
+        const DEFAULT_SCALES = [
+            {
+                id: 'default-4.0',
+                name: 'US 4.0 Standard Scale',
+                isDefault: true,
+                grades: [
+                    { name: 'A+', points: 4.00 },
+                    { name: 'A', points: 4.00 },
+                    { name: 'A-', points: 3.67 },
+                    { name: 'B+', points: 3.33 },
+                    { name: 'B', points: 3.00 },
+                    { name: 'B-', points: 2.67 },
+                    { name: 'C+', points: 2.33 },
+                    { name: 'C', points: 2.00 },
+                    { name: 'C-', points: 1.67 },
+                    { name: 'D+', points: 1.33 },
+                    { name: 'D', points: 1.00 },
+                    { name: 'F', points: 0.00 }
+                ]
+            },
+            {
+                id: 'default-4.3',
+                name: '4.3 Scale (Example)',
+                isDefault: true,
+                grades: [
+                    { name: 'A+', points: 4.30 },
+                    { name: 'A', points: 4.00 },
+                    { name: 'A-', points: 3.67 },
+                    { name: 'B+', points: 3.33 },
+                    { name: 'B', points: 3.00 },
+                    { name: 'B-', points: 2.67 },
+                    { name: 'C+', points: 2.33 },
+                    { name: 'C', points: 2.00 },
+                    { name: 'D', points: 1.00 },
+                    { name: 'F', points: 0.00 }
+                ]
+            },
+            {
+                id: 'default-5.0',
+                name: '5.0 Scale (Example)',
+                isDefault: true,
+                grades: [
+                    { name: 'A', points: 5.00 },
+                    { name: 'B', points: 4.00 },
+                    { name: 'C', points: 3.00 },
+                    { name: 'D', points: 2.00 },
+                    { name: 'E', points: 1.00 },
+                    { name: 'F', points: 0.00 }
+                ]
+            }
+        ];
+
+        function initializeLocalStorage() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (!stored) {
+                    const initialData = { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
+                    return initialData;
+                }
+                return JSON.parse(stored);
+            } catch (e) {
+                return { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+            }
+        }
+
+        function getScalesData() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                return stored ? JSON.parse(stored) : initializeLocalStorage();
+            } catch (e) {
+                return { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+            }
+        }
+
+        function saveScalesData(data) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                return true;
+            } catch (e) {
+                alert('Failed to save data. localStorage might be disabled.');
+                return false;
+            }
+        }
+
+        function getActiveScale() {
+            const data = getScalesData();
+            return data.scales.find(s => s.id === data.activeScaleId) || data.scales[0];
+        }
+
+        function setActiveScale(scaleId) {
+            const data = getScalesData();
+            data.activeScaleId = scaleId;
+            saveScalesData(data);
+        }
+
+        function updateGradeScalePreview() {
+            const scale = getActiveScale();
+            document.getElementById('active-scale-name').textContent = scale.name;
+            const preview = scale.grades.map(g => `${g.name}: ${g.points.toFixed(2)}`).join(' | ');
+            document.getElementById('grade-scale-preview').textContent = preview;
+        }
+
+        function checkAndToggleVisibility(containerId, headerId, hintId) {
+            const container = document.getElementById(containerId);
+            const header = document.getElementById(headerId);
+            const hint = document.getElementById(hintId);
+            if (!container || !header || !hint) return;
+
+            const subjectRows = Array.from(container.children).filter(child =>
+                !child.id.includes('hint') && !child.id.includes('header'));
+
+            if (subjectRows.length === 0) {
+                header.classList.add('hidden');
+                hint.classList.remove('hidden');
+            } else {
+                header.classList.remove('hidden');
+                hint.classList.add('hidden');
+            }
+        }
+
+        function reindexSubjects(containerId) {
+            const container = document.getElementById(containerId);
+            const rows = Array.from(container.children).filter(child =>
+                !child.id.includes('hint') && !child.id.includes('header'));
+            const type = containerId.includes('drop') ? 'Drop' : 'Add';
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = rows[i];
+                const indexDiv = row.querySelector('.subject-index');
+                if (indexDiv) indexDiv.textContent = `#${i + 1}`;
+
+                const nameInput = row.querySelector('.subjectName');
+                if (nameInput && !nameInput.value) {
+                    nameInput.placeholder = `${type} Course`;
+                }
+            }
+        }
+
+        function createAndInsertRow(containerId, defaultGrade, type) {
+            subjectCount++;
+            const container = document.getElementById(containerId);
+            const scale = getActiveScale();
+            const hintId = containerId.includes('drop') ? 'drop-hint' : 'add-hint';
+            const headerId = containerId.includes('drop') ? 'drop-header' : 'add-header';
+
+            let optionsHtml = '';
+            for (const grade of scale.grades) {
+                const selected = (grade.name === defaultGrade) ? 'selected' : '';
+                optionsHtml += `<option value="${grade.points}" ${selected}>${grade.name} (${grade.points.toFixed(2)})</option>`;
+            }
+
+            const newRow = document.createElement('div');
+            newRow.id = `subject-row-${subjectCount}`;
+            newRow.className = 'flex items-start sm:items-center space-x-2 p-3 bg-white rounded-xl shadow-sm border border-gray-100 transition-all subject-row';
+
+            newRow.innerHTML = `
+                <div class="w-8 flex-shrink-0 text-center font-bold text-gray-600 text-sm mt-2 sm:mt-0 subject-index">#</div>
+                <div class="hidden sm:block flex-1 min-w-[80px]"> 
+                    <input type="text" value="" placeholder="${type} Course"
+                           class="subjectName input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
+                </div>
+                <div class="w-24 sm:w-28 flex-shrink-0">
+                    <select class="subjectGP input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
+                        ${optionsHtml}
+                    </select>
+                </div>
+                <div class="w-14 sm:w-16 flex-shrink-0">
+                    <input type="number" value="3" step="1" min="1" max="15" required
+                           class="subjectCH input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
+                </div>
+                <button onclick="removeSubjectRow('${newRow.id}')"
+                        class="p-2 text-gray-400 hover:text-red-500 focus:outline-none transition-colors flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            `;
+            const headerElement = document.getElementById(headerId);
+            container.insertBefore(newRow, headerElement.nextSibling);
+            reindexSubjects(containerId);
+            checkAndToggleVisibility(containerId, headerId, hintId);
+        }
+
+        function addDropSubjectRow(defaultGrade = null) {
+            const scale = getActiveScale();
+            const defaultGradeName = defaultGrade || (scale.grades.length > 6 ? scale.grades[6].name : scale.grades[0].name);
+            createAndInsertRow('subjects-to-drop-container', defaultGradeName, 'Drop');
+        }
+
+        function addNewSubjectRow(defaultGrade = null) {
+            const scale = getActiveScale();
+            const defaultGradeName = defaultGrade || scale.grades[0].name;
+            createAndInsertRow('subjects-to-add-container', defaultGradeName, 'Add');
+        }
+
+        function removeSubjectRow(rowId) {
+            const row = document.getElementById(rowId);
+            if (row) {
+                const container = row.parentElement;
+                const containerId = container.id;
+                row.remove();
+                reindexSubjects(containerId);
+                const hintId = containerId.includes('drop') ? 'drop-hint' : 'add-hint';
+                const headerId = containerId.includes('drop') ? 'drop-header' : 'add-header';
+                checkAndToggleVisibility(containerId, headerId, hintId);
+            }
+        }
+
+        function initApp() {
+            initializeLocalStorage();
+            updateGradeScalePreview();
+        }
+
+        function openScaleModal() {
+            document.getElementById('scale-modal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            populateScaleList();
+            populateEditDropdown();
+            resetCreateForm();
+        }
+
+        function closeScaleModal() {
+            document.getElementById('scale-modal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function closeModalOnBackdrop(event) {
+            if (event.target.id === 'scale-modal') closeScaleModal();
+        }
+
+        function toggleAccordion(sectionId) {
+            const section = document.getElementById(sectionId);
+            const button = section.previousElementSibling;
+            const icon = button.querySelector('.accordion-icon');
+            section.classList.toggle('active');
+            icon.classList.toggle('rotate-180');
+        }
+
+        function populateScaleList() {
+            const data = getScalesData();
+            const container = document.getElementById('scale-list');
+            container.innerHTML = '';
+
+            data.scales.forEach(scale => {
+                const isActive = scale.id === data.activeScaleId;
+                const div = document.createElement('div');
+                div.className = 'flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors ' +
+                    (isActive ? 'bg-blue-50 border-blue-300' : 'border-gray-200');
+
+                div.innerHTML = `
+                    <input type="radio" name="scale-select" value="${scale.id}" ${isActive ? 'checked' : ''} 
+                           class="mt-1 w-4 h-4 text-blue-600">
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800">${scale.name}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${scale.grades.map(g => `${g.name}: ${g.points.toFixed(2)}`).join(', ')}
+                        </div>
+                        ${scale.isDefault ? '<span class="inline-block mt-1 text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">Default</span>' : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function applySelectedScale() {
+            const selected = document.querySelector('input[name="scale-select"]:checked');
+            if (!selected) {
+                alert('Please select a scale.');
+                return;
+            }
+
+            const data = getScalesData();
+            if (selected.value === data.activeScaleId) {
+                alert('This scale is already active.');
+                return;
+            }
+
+            if (confirm('Switching scales will clear all entered subjects. Continue?')) {
+                setActiveScale(selected.value);
+                updateGradeScalePreview();
+                clearAllSubjects();
+                closeScaleModal();
+                alert('Grade scale updated successfully!');
+            }
+        }
+
+        function clearAllSubjects() {
+            const addContainer = document.getElementById('subjects-to-add-container');
+            const addRows = Array.from(addContainer.children).filter(child =>
+                !child.id.includes('hint') && !child.id.includes('header'));
+            addRows.forEach(row => row.remove());
+            checkAndToggleVisibility('subjects-to-add-container', 'add-header', 'add-hint');
+
+            const dropContainer = document.getElementById('subjects-to-drop-container');
+            const dropRows = Array.from(dropContainer.children).filter(child =>
+                !child.id.includes('hint') && !child.id.includes('header'));
+            dropRows.forEach(row => row.remove());
+            checkAndToggleVisibility('subjects-to-drop-container', 'drop-header', 'drop-hint');
+        }
+
+        function resetCreateForm() {
+            document.getElementById('new-scale-name').value = '';
+            document.getElementById('new-scale-grades').innerHTML = '';
+            addGradeToNewScale();
+            addGradeToNewScale();
+            addGradeToNewScale();
+        }
+
+        function addGradeToNewScale() {
+            const container = document.getElementById('new-scale-grades');
+            const div = document.createElement('div');
+            div.className = 'flex flex-col sm:flex-row gap-2 p-2 bg-gray-50 rounded-lg';
+            div.innerHTML = `
+                <div class="flex-1">
+                    <input type="text" placeholder="Grade (e.g., A+)" 
+                           class="w-full p-2 border border-gray-300 rounded-lg text-sm new-grade-name">
+                </div>
+                <div class="flex-1">
+                    <input type="number" placeholder="Points (e.g., 4.00)" step="0.01" min="0" max="10"
+                           class="w-full p-2 border border-gray-300 rounded-lg text-sm new-grade-points">
+                </div>
+                <button onclick="this.parentElement.remove()" 
+                        class="px-3 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors text-sm font-medium">
+                    Remove
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        function saveNewScale() {
+            const name = document.getElementById('new-scale-name').value.trim();
+            if (!name) {
+                alert('Please enter a scale name.');
+                return;
+            }
+
+            const gradeElements = document.getElementById('new-scale-grades').children;
+            const grades = [];
+            const gradeNames = new Set();
+
+            for (let elem of gradeElements) {
+                const gradeName = elem.querySelector('.new-grade-name').value.trim();
+                const gradePoints = parseFloat(elem.querySelector('.new-grade-points').value);
+
+                if (!gradeName || isNaN(gradePoints)) {
+                    alert('Please fill in all grade names and points.');
+                    return;
+                }
+
+                if (gradeNames.has(gradeName)) {
+                    alert(`Duplicate grade name: ${gradeName}`);
+                    return;
+                }
+
+                gradeNames.add(gradeName);
+                grades.push({ name: gradeName, points: gradePoints });
+            }
+
+            if (grades.length === 0) {
+                alert('Please add at least one grade.');
+                return;
+            }
+
+            grades.sort((a, b) => b.points - a.points);
+
+            const data = getScalesData();
+            const newScale = {
+                id: 'custom-' + Date.now(),
+                name: name,
+                isDefault: false,
+                grades: grades
+            };
+
+            data.scales.push(newScale);
+            saveScalesData(data);
+
+            alert('New scale created successfully!');
+            resetCreateForm();
+            populateScaleList();
+            populateEditDropdown();
+        }
+
+        function populateEditDropdown() {
+            const data = getScalesData();
+            const select = document.getElementById('edit-scale-select');
+            select.innerHTML = '<option value="">-- Choose a scale --</option>';
+
+            data.scales.forEach(scale => {
+                const option = document.createElement('option');
+                option.value = scale.id;
+                option.textContent = scale.name + (scale.isDefault ? ' (Default)' : '');
+                select.appendChild(option);
+            });
+        }
+
+        function loadScaleForEdit() {
+            const scaleId = document.getElementById('edit-scale-select').value;
+            const formDiv = document.getElementById('edit-scale-form');
+            const defaultNotice = document.getElementById('default-scale-notice');
+            const inputsDiv = document.getElementById('edit-scale-inputs');
+
+            if (!scaleId) {
+                formDiv.classList.add('hidden');
+                return;
+            }
+
+            formDiv.classList.remove('hidden');
+
+            const data = getScalesData();
+            const scale = data.scales.find(s => s.id === scaleId);
+
+            if (scale.isDefault) {
+                defaultNotice.classList.remove('hidden');
+                inputsDiv.classList.add('hidden');
+                return;
+            }
+
+            defaultNotice.classList.add('hidden');
+            inputsDiv.classList.remove('hidden');
+
+            currentEditingScaleId = scaleId;
+            document.getElementById('edit-scale-name').value = scale.name;
+
+            const container = document.getElementById('edit-scale-grades');
+            container.innerHTML = '';
+
+            scale.grades.forEach(grade => {
+                addGradeToEditScale(grade.name, grade.points);
+            });
+        }
+
+        function addGradeToEditScale(name = '', points = '') {
+            const container = document.getElementById('edit-scale-grades');
+            const div = document.createElement('div');
+            div.className = 'flex flex-col sm:flex-row gap-2 p-2 bg-gray-50 rounded-lg';
+            div.innerHTML = `
+                <div class="flex-1">
+                    <input type="text" value="${name}" placeholder="Grade (e.g., A+)" 
+                           class="w-full p-2 border border-gray-300 rounded-lg text-sm edit-grade-name">
+                </div>
+                <div class="flex-1">
+                    <input type="number" value="${points}" placeholder="Points (e.g., 4.00)" step="0.01" min="0" max="10"
+                           class="w-full p-2 border border-gray-300 rounded-lg text-sm edit-grade-points">
+                </div>
+                <button onclick="this.parentElement.remove()" 
+                        class="px-3 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg transition-colors text-sm font-medium">
+                    Remove
+                </button>
+            `;
+            container.appendChild(div);
+        }
+
+        function saveEditedScale() {
+            if (!currentEditingScaleId) return;
+
+            const name = document.getElementById('edit-scale-name').value.trim();
+            if (!name) {
+                alert('Please enter a scale name.');
+                return;
+            }
+
+            const gradeElements = document.getElementById('edit-scale-grades').children;
+            const grades = [];
+            const gradeNames = new Set();
+
+            for (let elem of gradeElements) {
+                const gradeName = elem.querySelector('.edit-grade-name').value.trim();
+                const gradePoints = parseFloat(elem.querySelector('.edit-grade-points').value);
+
+                if (!gradeName || isNaN(gradePoints)) {
+                    alert('Please fill in all grade names and points.');
+                    return;
+                }
+
+                if (gradeNames.has(gradeName)) {
+                    alert(`Duplicate grade name: ${gradeName}`);
+                    return;
+                }
+
+                gradeNames.add(gradeName);
+                grades.push({ name: gradeName, points: gradePoints });
+            }
+
+            if (grades.length === 0) {
+                alert('Please add at least one grade.');
+                return;
+            }
+
+            grades.sort((a, b) => b.points - a.points);
+
+            const data = getScalesData();
+            const scaleIndex = data.scales.findIndex(s => s.id === currentEditingScaleId);
+
+            if (scaleIndex !== -1) {
+                data.scales[scaleIndex].name = name;
+                data.scales[scaleIndex].grades = grades;
+                saveScalesData(data);
+
+                if (currentEditingScaleId === data.activeScaleId) {
+                    updateGradeScalePreview();
+                    clearAllSubjects();
+                    alert('Scale updated successfully! All entered subjects have been cleared.');
+                } else {
+                    alert('Scale updated successfully!');
+                }
+
+                populateScaleList();
+                populateEditDropdown();
+                document.getElementById('edit-scale-select').value = '';
+                loadScaleForEdit();
+            }
+        }
+
+        function deleteScale() {
+            if (!currentEditingScaleId) return;
+
+            if (!confirm('Are you sure you want to delete this scale? This action cannot be undone.')) {
+                return;
+            }
+
+            const data = getScalesData();
+            const scaleIndex = data.scales.findIndex(s => s.id === currentEditingScaleId);
+
+            if (scaleIndex !== -1) {
+                const wasActive = data.scales[scaleIndex].id === data.activeScaleId;
+                data.scales.splice(scaleIndex, 1);
+
+                if (wasActive && data.scales.length > 0) {
+                    data.activeScaleId = data.scales[0].id;
+                    updateGradeScalePreview();
+                    clearAllSubjects();
+                }
+
+                saveScalesData(data);
+                alert('Scale deleted successfully!' + (wasActive ? ' Switched to first available scale.' : ''));
+
+                populateScaleList();
+                populateEditDropdown();
+                document.getElementById('edit-scale-select').value = '';
+                loadScaleForEdit();
+            }
+        }
+
+        function getSubjectTotals(containerId) {
+            let totalQP = 0;
+            let totalCH = 0;
+            let isValid = true;
+
+            const subjectRows = Array.from(document.getElementById(containerId).children).filter(child =>
+                !child.id.includes('hint') && !child.id.includes('header'));
+
+            for (let i = 0; i < subjectRows.length; i++) {
+                const row = subjectRows[i];
+                const gpSelect = row.querySelector('.subjectGP');
+                const chInput = row.querySelector('.subjectCH');
+
+                if (!gpSelect || !chInput || !chInput.checkValidity()) {
+                    isValid = false;
+                    break;
+                }
+
+                const subjectGP = parseFloat(gpSelect.value);
+                const subjectCH = parseFloat(chInput.value);
+
+                if (isNaN(subjectCH) || subjectCH < 1) {
+                    isValid = false;
+                    break;
+                }
+
+                totalQP += (subjectGP * subjectCH);
+                totalCH += subjectCH;
+            }
+
+            return { qp: totalQP, ch: totalCH, isValid: isValid };
+        }
+
+        function calculateCGPA() {
+            document.getElementById('error-message').classList.add('hidden');
+            document.getElementById('result-box').classList.add('hidden');
+
+            const currentCGPAInput = document.getElementById('currentCGPA');
+            const currentTotalCHInput = document.getElementById('currentTotalCH');
+
+            const currentCGPA = parseFloat(currentCGPAInput.value);
+            const currentTotalCH = parseInt(currentTotalCHInput.value);
+
+            if (!currentCGPAInput.checkValidity() || !currentTotalCHInput.checkValidity() || isNaN(currentCGPA) || isNaN(currentTotalCH)) {
+                document.getElementById('error-message').innerHTML = "Please ensure your Current CGPA and Total Credit Hours are valid numbers.";
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            const dropped = getSubjectTotals('subjects-to-drop-container');
+            const added = getSubjectTotals('subjects-to-add-container');
+
+            if (!dropped.isValid || !added.isValid) {
+                document.getElementById('error-message').innerHTML = "Please check all Credit Hour inputs in both sections (Credit Hours must be between 1 and 15).";
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+
+            const currentTotalQP = currentCGPA * currentTotalCH;
+            const newTotalCH = currentTotalCH - dropped.ch + added.ch;
+            const newTotalQP = currentTotalQP - dropped.qp + added.qp;
+
+            let newCGPA;
+
+            if (newTotalCH <= 0 && newTotalQP > 0) {
+                document.getElementById('error-message').innerHTML = "Error: The resulting total credit hours is zero or negative.";
+                document.getElementById('error-message').classList.remove('hidden');
+                return;
+            }
+            if (newTotalCH === 0 && newTotalQP === 0) {
+                newCGPA = 0;
+            } else {
+                newCGPA = newTotalQP / newTotalCH;
+            }
+
+            const resultBox = document.getElementById('result-box');
+            const newCGPAValue = document.getElementById('newCGPAValue');
+            const newTotalCHValue = document.getElementById('newTotalCHValue');
+            const messageElement = document.getElementById('message');
+
+            newCGPAValue.textContent = newCGPA.toFixed(4);
+            newTotalCHValue.textContent = newTotalCH;
+
+            if (newCGPA > currentCGPA) {
+                messageElement.textContent = `Excellent! Your CGPA improved by +${(newCGPA - currentCGPA).toFixed(4)}!`;
+            } else if (newCGPA < currentCGPA) {
+                messageElement.textContent = `Your projected CGPA changed by ${(newCGPA - currentCGPA).toFixed(4)}.`;
+            } else {
+                messageElement.textContent = "The net change from dropping and adding subjects was zero.";
+            }
+
+            resultBox.classList.remove('hidden');
+        }
+
+        window.onload = function () {
+            initApp();
+        };
+    </script>
+</body>
+
+</html>
