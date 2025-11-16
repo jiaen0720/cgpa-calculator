@@ -321,71 +321,77 @@
     <script>
         let subjectCount = 0;
         let currentEditingScaleId = null;
+        
         const STORAGE_KEY = 'cgpaScalesData';
 
-        const DEFAULT_SCALES = [
-            {
-                id: 'default-4.0',
-                name: 'US 4.0 Standard Scale',
-                isDefault: true,
-                grades: [
-                    { name: 'A+', points: 4.00 },
-                    { name: 'A', points: 4.00 },
-                    { name: 'A-', points: 3.67 },
-                    { name: 'B+', points: 3.33 },
-                    { name: 'B', points: 3.00 },
-                    { name: 'B-', points: 2.67 },
-                    { name: 'C+', points: 2.33 },
-                    { name: 'C', points: 2.00 },
-                    { name: 'C-', points: 1.67 },
-                    { name: 'D+', points: 1.33 },
-                    { name: 'D', points: 1.00 },
-                    { name: 'F', points: 0.00 }
-                ]
-            },
-            {
-                id: 'default-4.3',
-                name: '4.3 Scale (Example)',
-                isDefault: true,
-                grades: [
-                    { name: 'A+', points: 4.30 },
-                    { name: 'A', points: 4.00 },
-                    { name: 'A-', points: 3.67 },
-                    { name: 'B+', points: 3.33 },
-                    { name: 'B', points: 3.00 },
-                    { name: 'B-', points: 2.67 },
-                    { name: 'C+', points: 2.33 },
-                    { name: 'C', points: 2.00 },
-                    { name: 'D', points: 1.00 },
-                    { name: 'F', points: 0.00 }
-                ]
-            },
-            {
-                id: 'default-5.0',
-                name: '5.0 Scale (Example)',
-                isDefault: true,
-                grades: [
-                    { name: 'A', points: 5.00 },
-                    { name: 'B', points: 4.00 },
-                    { name: 'C', points: 3.00 },
-                    { name: 'D', points: 2.00 },
-                    { name: 'E', points: 1.00 },
-                    { name: 'F', points: 0.00 }
-                ]
-            }
-        ];
+               const DEFAULT_SCALES = [
+                {
+                    id: 'utar',
+                    name: 'Universiti Tunku Abdul Rahman (UTAR)',
+                    isDefault: true,
+                    grades: [
+                        { name: 'A+', points: 4.00 },
+                        { name: 'A', points: 4.00 },
+                        { name: 'A-', points: 3.67 },
+                        { name: 'B+', points: 3.33 },
+                        { name: 'B', points: 3.00 },
+                        { name: 'B-', points: 2.67 },
+                        { name: 'C+', points: 2.33 },
+                        { name: 'C', points: 2.00 },
+                        { name: 'F', points: 0.00 }
+                    ]
+                },
+                {
+                    id: 'um',
+                    name: 'Universiti Malaya (UM)',
+                    isDefault: false,
+                    grades: [
+                        { name: 'A+', points: 4.00 },
+                        { name: 'A', points: 4.00 },
+                        { name: 'A-', points: 3.70 },
+                        { name: 'B+', points: 3.30 },
+                        { name: 'B', points: 3.00 },
+                        { name: 'B-', points: 2.70 },
+                        { name: 'C+', points: 2.30 },
+                        { name: 'C', points: 2.00 },
+                        { name: 'C-', points: 1.7 },
+                        { name: 'D+', points: 1.3 },
+                        { name: 'D', points: 1.00 },
+                        { name: 'F', points: 0.00 }
+                    ]
+                },
+                {
+                    id: 'usm',
+                    name: 'Universiti Sains Malaysia (USM)',
+                    isDefault: false,
+                    grades: [
+                        { name: 'A', points: 4.00 },
+                        { name: 'A-', points: 3.67 },
+                        { name: 'B+', points: 3.33 },
+                        { name: 'B', points: 3.00 },
+                        { name: 'B-', points: 2.67 },
+                        { name: 'C+', points: 2.33 },
+                        { name: 'C', points: 2.00 },
+                        { name: 'C-', points: 1.67 },
+                        { name: 'D+', points: 1.33 },
+                        { name: 'D', points: 1.00 },
+                        { name: 'D-', points: 0.67 },
+                        { name: 'F', points: 0.00 }
+                    ]
+                } 
+            ];
 
         function initializeLocalStorage() {
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (!stored) {
-                    const initialData = { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+                    const initialData = { scales: DEFAULT_SCALES, activeScaleId: 'utar' };
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(initialData));
                     return initialData;
                 }
                 return JSON.parse(stored);
             } catch (e) {
-                return { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+                return { scales: DEFAULT_SCALES, activeScaleId: 'utar' };
             }
         }
 
@@ -394,7 +400,7 @@
                 const stored = localStorage.getItem(STORAGE_KEY);
                 return stored ? JSON.parse(stored) : initializeLocalStorage();
             } catch (e) {
-                return { scales: DEFAULT_SCALES, activeScaleId: 'default-4.0' };
+                return { scales: DEFAULT_SCALES, activeScaleId: 'utar' };
             }
         }
 
