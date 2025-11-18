@@ -49,7 +49,7 @@
         }
 
         .accordion-content.active {
-            max-height: 2000px;
+            max-height: none;
             transition: max-height 0.5s ease-in;
         }
 
@@ -91,7 +91,7 @@
 
     <div class="w-full max-w-2xl bg-white p-6 sm:p-10 rounded-xl shadow-2xl transition-all duration-300 mt-12 sm:mt-0">
         <h1 class="text-4xl font-extrabold text-gray-700 mb-2">CGPA Calculator</h1>
-        <p class="text-gray-500 mb-6">Project your CGPA by adding new or dropping existing courses.</p>
+        <p class="text-gray-500 mb-6">Simulate your projected CGPA by adding new courses or dropping old ones.</p>
 
         <div class="space-y-4 mb-8 p-6 bg-white rounded-xl border border-gray-200">
             <h2 class="text-xl font-semibold text-gray-800">Current CGPA</h2>
@@ -109,25 +109,27 @@
                 </div>
             </div>
 
-            <div class="p-3 bg-amber-100 rounded-lg text-sm border border-amber-300">
-                <div class="flex items-start justify-between">
-                    <div class="flex-1 pr-2">
-                        <p class="font-semibold mb-1 text-amber-800">Grade Point Scale: <span
-                                id="active-scale-name">Loading...</span></p>
-                        <p id="grade-scale-preview" class="text-xs text-gray-700">Loading grades...</p>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                        </path>
+                    </svg>
+                    <div>
+                        <span class="text-sm font-medium text-gray-700">Grade Scale:</span>
+                        <span id="active-scale-name" class="ml-2 text-sm font-semibold text-gray-900">Loading...</span>
                     </div>
-                    <button onclick="openScaleModal()"
-                        class="flex-shrink-0 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium rounded-md transition-colors flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                        </svg>
-                        <span class="hidden sm:inline">Manage</span>
-                    </button>
                 </div>
+                <button onclick="openScaleModal()"
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 hover:bg-gray-800 text-white text-sm font-medium rounded-md transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                        </path>
+                    </svg>
+                    <span>Change</span>
+                </button>
             </div>
         </div>
 
@@ -146,9 +148,9 @@
                     class="hidden flex items-center space-x-2 text-xs font-semibold text-gray-700 mb-2 px-3 pt-1 border-b border-indigo-200 pb-1">
                     <div class="w-8 flex-shrink-0 text-center">#</div>
                     <div class="hidden sm:block flex-1 min-w-[80px] text-left">Subject Name (Optional)</div>
-                    <div class="w-24 sm:w-28 flex-shrink-0 text-center">Grade (GP)</div>
-                    <div class="w-14 sm:w-16 flex-shrink-0 text-center">Credit Hours</div>
-                    <div class="w-9 flex-shrink-0"></div>
+                    <div class="flex-1 min-w-[80px] text-center">Grade (GP)</div>
+                    <div class="w-16 flex-shrink-0 text-center">Credit Hours</div>
+                    <div class="w-10 flex-shrink-0"></div>
                 </div>
                 <div id="add-hint" class="hint-text text-center py-6 text-indigo-500 font-medium italic">
                     Click "Add New Subject" above to include projected grades.
@@ -171,12 +173,12 @@
                     class="hidden flex items-center space-x-2 text-xs font-semibold text-gray-700 mb-2 px-3 pt-1 border-b border-pink-200 pb-1">
                     <div class="w-8 flex-shrink-0 text-center">#</div>
                     <div class="hidden sm:block flex-1 min-w-[80px] text-left">Subject Name (Optional)</div>
-                    <div class="w-24 sm:w-28 flex-shrink-0 text-center">Grade (GP)</div>
-                    <div class="w-14 sm:w-16 flex-shrink-0 text-center">Credit Hours</div>
-                    <div class="w-9 flex-shrink-0"></div>
+                    <div class="flex-1 min-w-[80px] text-center">Grade (GP)</div>
+                    <div class="w-16 flex-shrink-0 text-center">Credit Hours</div>
+                    <div class="w-10 flex-shrink-0"></div>
                 </div>
                 <div id="drop-hint" class="hint-text text-center py-6 text-pink-500 font-medium italic">
-                    Click "Add Subject to Drop" above to remove existing courses.
+                    Click "Add Subject to Drop" above to remove old grades and credits.
                 </div>
             </div>
         </div>
@@ -289,11 +291,11 @@
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
-                                    <div id="new-scale-grades" class="space-y-2 mb-3"></div>
                                     <button onclick="addGradeToNewScale()"
-                                        class="w-full py-2 px-4 border-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium">
+                                        class="w-full py-2 px-4 border-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium mb-3">
                                         + Add Grade
                                     </button>
+                                    <div id="new-scale-grades" class="space-y-2"></div>
                                 </div>
                                 <button onclick="saveNewScale()"
                                     class="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
@@ -345,11 +347,11 @@
                                         </div>
                                         <div class="mb-4">
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
-                                            <div id="edit-scale-grades" class="space-y-2 mb-3"></div>
                                             <button onclick="addGradeToEditScale()"
-                                                class="w-full py-2 px-4 border-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium">
+                                                class="w-full py-2 px-4 border-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium mb-3">
                                                 + Add Grade
                                             </button>
+                                            <div id="edit-scale-grades" class="space-y-2"></div>
                                         </div>
                                         <div class="flex flex-col sm:flex-row gap-2">
                                             <button onclick="saveEditedScale()"
@@ -686,17 +688,17 @@
                     <input type="text" value="" placeholder="${type} Course"
                            class="subjectName input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
                 </div>
-                <div class="w-24 sm:w-28 flex-shrink-0">
+                <div class="flex-1 min-w-[80px]">
                     <select class="subjectGP input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
                         ${optionsHtml}
                     </select>
                 </div>
-                <div class="w-14 sm:w-16 flex-shrink-0">
+                <div class="w-16 flex-shrink-0">
                     <input type="number" value="3" step="1" min="1" max="15" required
                            class="subjectCH input-field tight-input w-full rounded-md border-gray-300 p-2 text-sm border">
                 </div>
                 <button onclick="removeSubjectRow('${newRow.id}')"
-                        class="p-2 text-gray-400 hover:text-pink-500 focus:outline-none transition-colors flex-shrink-0">
+                        class="w-10 flex-shrink-0 p-2 text-gray-400 hover:text-pink-500 focus:outline-none transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
@@ -826,22 +828,25 @@
         function resetCreateForm() {
             document.getElementById('new-scale-name').value = '';
             document.getElementById('new-scale-grades').innerHTML = '';
-            addGradeToNewScale();
-            addGradeToNewScale();
-            addGradeToNewScale();
+
+            // Pre-populate with default grade letters (A+, A, A-, B+, B, B-, C+, C, F)
+            const defaultGrades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'F'];
+            defaultGrades.forEach(grade => {
+                addGradeToNewScale(grade, '');
+            });
         }
 
-        function addGradeToNewScale() {
+        function addGradeToNewScale(gradeName = '', gradePoints = '') {
             const container = document.getElementById('new-scale-grades');
             const div = document.createElement('div');
             div.className = 'flex flex-col sm:flex-row gap-2 p-2 bg-gray-50 rounded-lg';
             div.innerHTML = `
                 <div class="flex-1">
-                    <input type="text" placeholder="Grade (e.g., A+)" 
+                    <input type="text" value="${gradeName}" placeholder="Grade (e.g., A+)" 
                            class="w-full p-2 border border-gray-300 rounded-lg text-sm new-grade-name">
                 </div>
                 <div class="flex-1">
-                    <input type="number" placeholder="Points (e.g., 4.00)" step="0.01" min="0" max="10"
+                    <input type="number" value="${gradePoints}" placeholder="Points (e.g., 4.00)" step="0.01" min="0" max="10"
                            class="w-full p-2 border border-gray-300 rounded-lg text-sm new-grade-points">
                 </div>
                 <button onclick="this.parentElement.remove()" 
