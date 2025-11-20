@@ -94,7 +94,6 @@
         <p class="text-gray-500 mb-6">Simulate your projected CGPA by adding new courses or dropping old ones.</p>
 
         <div class="space-y-4 mb-8 p-6 bg-white rounded-xl border border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">Current CGPA</h2>
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <div class="flex-1">
                     <label for="currentCGPA" class="block text-sm font-medium text-gray-700">Current CGPA</label>
@@ -102,8 +101,20 @@
                         class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
                 </div>
                 <div class="flex-1">
-                    <label for="currentTotalCH" class="block text-sm font-medium text-gray-700">Total Credit
-                        Hours</label>
+                    <label for="currentTotalCH" class="block text-sm font-medium text-gray-700 flex items-center gap-1">
+                        Total Credit Hours
+                        <span class="relative group">
+                            <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help inline-block" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span
+                                class="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg z-50 whitespace-normal">
+                                Please exclude the credit hours for subjects without grades.
+                            </span>
+                        </span>
+                    </label>
                     <input type="number" id="currentTotalCH" value="0" step="1" min="0" required
                         class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
                 </div>
@@ -111,11 +122,6 @@
 
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="flex items-center gap-2">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
-                        </path>
-                    </svg>
                     <div>
                         <span class="text-sm font-medium text-gray-700">Grade Scale:</span>
                         <span id="active-scale-name" class="ml-2 text-sm font-semibold text-gray-900">Loading...</span>
@@ -123,11 +129,6 @@
                 </div>
                 <button onclick="openScaleModal()"
                     class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-black text-sm font-medium border border-gray-300 rounded-md transition-colors">
-                    <!-- <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
-                        </path>
-                    </svg> -->
                     <span>Change</span>
                 </button>
             </div>
@@ -194,6 +195,11 @@
             <p class="text-lg font-medium opacity-80">Your New Projected CGPA is:</p>
             <p id="newCGPAValue" class="text-6xl font-extrabold text-yellow-400 mt-1">--</p>
 
+            <div class="mt-6 p-4 bg-cyan-900 bg-opacity-40 rounded-lg border border-cyan-500">
+                <p class="text-sm font-medium text-cyan-300">Your GPA for Added Subjects:</p>
+                <p id="newGPAValue" class="text-4xl font-extrabold text-cyan-400 mt-1">--</p>
+            </div>
+
             <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div class="p-3 bg-green-800 bg-opacity-30 rounded-lg border border-green-600">
                     <p class="text-xs text-green-300 font-medium">Credits Added</p>
@@ -239,11 +245,6 @@
                         <button onclick="toggleAccordion('select-section')"
                             class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div class="flex items-center gap-2">
-                                <!-- <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg> -->
                                 <h3 class="text-lg font-semibold text-gray-800">Select Grade Scale</h3>
                             </div>
                             <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
@@ -269,11 +270,6 @@
                         <button onclick="toggleAccordion('create-section')"
                             class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div class="flex items-center gap-2">
-                                <!-- <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 4v16m8-8H4"></path>
-                                </svg> -->
                                 <h3 class="text-lg font-semibold text-gray-800">Create New Scale</h3>
                             </div>
                             <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
@@ -309,12 +305,6 @@
                         <button onclick="toggleAccordion('edit-section')"
                             class="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
                             <div class="flex items-center gap-2">
-                                <!-- <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
-                                    </path>
-                                </svg> -->
                                 <h3 class="text-lg font-semibold text-gray-800">Edit/Delete Scales</h3>
                             </div>
                             <svg class="w-5 h-5 text-gray-600 transform transition-transform accordion-icon" fill="none"
@@ -349,7 +339,7 @@
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Grades</label>
                                             <div id="edit-scale-grades" class="space-y-2 mb-3"></div>
                                             <button onclick="addGradeToEditScale()"
-                                                class="w-full py-2 px-4 border-2 border-dashed border-gray-300 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors font-medium">
+                                                class="w-full py-2 px-4 border-2 border-dashed border-indigo-300 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors font-medium">
                                                 + Add Grade
                                             </button>
                                         </div>
@@ -362,22 +352,36 @@
                                                 class="flex-1 py-2 px-4 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors">
                                                 Delete Scale
                                             </button>
-                                        </div>                       
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="pt-4 border-t border-gray-200">
-                                    <button onclick="confirmResetAllData()"
-                                        class="w-full py-2.5 px-4 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                            </path>
-                                        </svg>
-                                        Reset All Data to Default
-                                    </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
+                        <div class="flex items-start gap-3 mb-3">
+                            <svg class="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                                </path>
+                            </svg>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold text-pink-800 mb-1">Danger Zone</h4>
+                                <p class="text-xs text-pink-700">This will permanently delete all custom grade scales
+                                    and reset to default
+                                    settings. This action cannot be undone.</p>
+                            </div>
+                        </div>
+                        <button onclick="confirmResetAllData()"
+                            class="w-full py-2.5 px-4 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                </path>
+                            </svg>
+                            Reset All Data to Default
+                        </button>
                     </div>
                 </div>
             </div>
@@ -764,12 +768,12 @@
             data.scales.forEach(scale => {
                 const isActive = scale.id === data.activeScaleId;
                 const div = document.createElement('div');
-                div.className = 'flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors ' +
+                div.className = 'flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors cursor-pointer ' +
                     (isActive ? 'bg-indigo-50 border-indigo-300' : 'border-gray-200');
 
                 div.innerHTML = `
                     <input type="radio" name="scale-select" value="${scale.id}" ${isActive ? 'checked' : ''} 
-                           class="mt-1 w-4 h-4 text-indigo-600">
+                           class="mt-1 w-4 h-4 text-indigo-600 pointer-events-none">
                     <div class="flex-1">
                         <div class="font-medium text-gray-800">${scale.name}</div>
                         <div class="text-xs text-gray-600 mt-1">
@@ -778,6 +782,13 @@
                         ${scale.isDefault ? '<span class="inline-block mt-1 text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded">Default</span>' : ''}
                     </div>
                 `;
+
+                // Make the entire div clickable
+                div.addEventListener('click', function () {
+                    const radio = this.querySelector('input[type="radio"]');
+                    radio.checked = true;
+                });
+
                 container.appendChild(div);
             });
         }
@@ -1217,7 +1228,14 @@
             const netChangeCHEl = document.getElementById('netChangeCH');
             const messageElement = document.getElementById('message');
 
+            // Calculate GPA for added subjects only
+            let newGPA = 0;
+            if (added.ch > 0) {
+                newGPA = added.qp / added.ch;
+            }
+
             newCGPAValue.textContent = newCGPA.toFixed(4);
+            document.getElementById('newGPAValue').textContent = added.ch > 0 ? newGPA.toFixed(4) : 'N/A';
             newTotalCHValue.textContent = newTotalCH;
             addedCHEl.textContent = `+${added.ch}`;
             droppedCHEl.textContent = `-${dropped.ch}`;
