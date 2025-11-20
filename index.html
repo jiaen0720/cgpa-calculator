@@ -96,12 +96,13 @@
         <div class="space-y-4 mb-8 p-6 bg-white rounded-xl border border-gray-200">
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <div class="flex-1">
-                    <label for="currentCGPA" class="block text-sm font-medium text-gray-700">Current CGPA</label>
+                    <label for="currentCGPA" class="block text-sm font-semibold text-gray-700">Current CGPA</label>
                     <input type="number" id="currentCGPA" value="0" step="0.0001" min="0" max="4.0" required
                         class="input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border">
                 </div>
                 <div class="flex-1">
-                    <label for="currentTotalCH" class="block text-sm font-medium text-gray-700 flex items-center gap-1">
+                    <label for="currentTotalCH"
+                        class="block text-sm font-semibold text-gray-700 flex items-center gap-1">
                         Total Credit Hours
                         <span class="relative group">
                             <svg class="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help inline-block" fill="none"
@@ -123,12 +124,12 @@
             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="flex items-center gap-2">
                     <div>
-                        <span class="text-sm font-medium text-gray-700">Grade Scale:</span>
-                        <span id="active-scale-name" class="ml-2 text-sm font-semibold text-gray-900">Loading...</span>
+                        <span class="text-sm font-semibold text-gray-700">Grade Scale:</span>
+                        <span id="active-scale-name" class="ml-2 text-sm font-medium text-gray-900">Loading...</span>
                     </div>
                 </div>
                 <button onclick="openScaleModal()"
-                    class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-black text-sm font-medium border border-gray-300 rounded-md transition-colors">
+                    class="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-black text-sm font-medium border border-gray-300 rounded-md transition-colors">
                     <span>Change</span>
                 </button>
             </div>
@@ -192,26 +193,22 @@
         </div>
 
         <div id="result-box" class="mt-8 p-8 rounded-xl bg-gray-900 text-white text-center shadow-inner hidden">
-            <p class="text-lg font-medium opacity-80">Your New Projected CGPA is:</p>
+            <p class="text-lg font-medium opacity-80">Your New Projected <b>CGPA</b> is:</p>
             <p id="newCGPAValue" class="text-6xl font-extrabold text-yellow-400 mt-1">--</p>
 
-            <div class="mt-6 p-4 bg-cyan-900 bg-opacity-40 rounded-lg border border-cyan-500">
-                <p class="text-sm font-medium text-cyan-300">Your GPA for Added Subjects:</p>
-                <p id="newGPAValue" class="text-4xl font-extrabold text-cyan-400 mt-1">--</p>
+            <div class="mt-6 p-4">
+                <p class="text-sm font-medium opacity-80">Your <b>GPA</b> for Added Subjects:</p>
+                <p id="newGPAValue" class="text-4xl font-extrabold text-yellow-400 mt-1">--</p>
             </div>
 
-            <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                <div class="p-3 bg-green-800 bg-opacity-30 rounded-lg border border-green-600">
-                    <p class="text-xs text-green-300 font-medium">Credits Added</p>
-                    <p id="addedCH" class="text-2xl font-bold text-green-400">--</p>
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+                <div class="p-3 bg-indigo-800 bg-opacity-30 rounded-lg border border-indigo-600">
+                    <p class="text-xs text-indigo-300 font-medium">Credits Added</p>
+                    <p id="addedCH" class="text-2xl font-bold text-indigo-400">--</p>
                 </div>
                 <div class="p-3 bg-pink-800 bg-opacity-30 rounded-lg border border-pink-600">
                     <p class="text-xs text-pink-300 font-medium">Credits Dropped</p>
                     <p id="droppedCH" class="text-2xl font-bold text-pink-400">--</p>
-                </div>
-                <div class="p-3 bg-indigo-800 bg-opacity-30 rounded-lg border border-indigo-600">
-                    <p class="text-xs text-indigo-300 font-medium">Net Change</p>
-                    <p id="netChangeCH" class="text-2xl font-bold text-indigo-400">--</p>
                 </div>
             </div>
 
@@ -221,9 +218,6 @@
             <p id="message" class="mt-4 text-sm italic text-gray-300"></p>
         </div>
 
-        <div id="error-message" class="mt-4 p-3 bg-pink-100 border border-pink-400 text-pink-700 rounded-lg hidden">
-            Please fill in all required fields.
-        </div>
     </div>
 
     <div id="scale-modal" class="fixed inset-0 z-[60] hidden modal-backdrop" onclick="closeModalOnBackdrop(event)">
@@ -358,28 +352,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg">
-                        <div class="flex items-start gap-3 mb-3">
-                            <svg class="w-5 h-5 text-pink-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                                </path>
-                            </svg>
-                            <div class="flex-1">
-                                <h4 class="text-sm font-semibold text-pink-800 mb-1">Danger Zone</h4>
-                                <p class="text-xs text-pink-700">This will permanently delete all custom grade scales
-                                    and reset to default
-                                    settings. This action cannot be undone.</p>
-                            </div>
-                        </div>
+                    <div class="mt-6 p-4 bg-pink-50 border border-pink-200 rounded-lg space-y-3">
+                        <p class="text-pink-700 text-left">Resetting permanently deletes all custom grade scales and restores the defaults.</p>
                         <button onclick="confirmResetAllData()"
                             class="w-full py-2.5 px-4 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                                </path>
-                            </svg>
+
                             Reset All Data to Default
                         </button>
                     </div>
@@ -437,7 +414,7 @@
 
             const icons = {
                 success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>',
-                error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>',
+                error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>',
                 warning: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>',
                 info: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
             };
@@ -700,7 +677,7 @@
                 </button>
             `;
             const headerElement = document.getElementById(headerId);
-            container.insertBefore(newRow, headerElement.nextSibling);
+            container.appendChild(newRow, headerElement.nextSibling);
             reindexSubjects(containerId);
             checkAndToggleVisibility(containerId, headerId, hintId);
         }
@@ -752,12 +729,38 @@
             if (event.target.id === 'scale-modal') closeScaleModal();
         }
 
+        function setAccordionState(sectionId, shouldOpen) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+
+            const button = section.previousElementSibling;
+            const icon = button ? button.querySelector('.accordion-icon') : null;
+
+            if (shouldOpen) {
+                section.classList.add('active');
+                icon?.classList.add('rotate-180');
+            } else {
+                section.classList.remove('active');
+                icon?.classList.remove('rotate-180');
+            }
+        }
+
         function toggleAccordion(sectionId) {
             const section = document.getElementById(sectionId);
-            const button = section.previousElementSibling;
-            const icon = button.querySelector('.accordion-icon');
-            section.classList.toggle('active');
-            icon.classList.toggle('rotate-180');
+            if (!section) return;
+            const isActive = section.classList.contains('active');
+            setAccordionState(sectionId, !isActive);
+        }
+
+        function focusSelectScaleSection(sectionToClose) {
+            if (sectionToClose) {
+                setAccordionState(sectionToClose, false);
+            }
+
+            setAccordionState('select-section', true);
+
+            const selectSection = document.getElementById('select-section');
+            selectSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function populateScaleList() {
@@ -910,6 +913,7 @@
             resetCreateForm();
             populateScaleList();
             populateEditDropdown();
+            focusSelectScaleSection('create-section');
         }
 
         function populateEditDropdown() {
@@ -1040,6 +1044,7 @@
                 populateEditDropdown();
                 document.getElementById('edit-scale-select').value = '';
                 loadScaleForEdit();
+                focusSelectScaleSection('edit-section');
             }
         }
 
@@ -1077,6 +1082,7 @@
                 populateEditDropdown();
                 document.getElementById('edit-scale-select').value = '';
                 loadScaleForEdit();
+                focusSelectScaleSection('edit-section');
             }
         }
 
@@ -1099,8 +1105,6 @@
                 document.getElementById('currentTotalCH').value = '0';
 
                 document.getElementById('result-box').classList.add('hidden');
-                document.getElementById('error-message').classList.add('hidden');
-
                 populateScaleList();
                 populateEditDropdown();
 
@@ -1145,7 +1149,6 @@
         }
 
         function calculateCGPA() {
-            document.getElementById('error-message').classList.add('hidden');
             document.getElementById('result-box').classList.add('hidden');
 
             const currentCGPAInput = document.getElementById('currentCGPA');
@@ -1155,16 +1158,14 @@
             const currentTotalCH = parseInt(currentTotalCHInput.value);
 
             if (!currentCGPAInput.checkValidity() || !currentTotalCHInput.checkValidity() || isNaN(currentCGPA) || isNaN(currentTotalCH)) {
-                document.getElementById('error-message').innerHTML = "Please ensure your Current CGPA and Total Credit Hours are valid numbers.";
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification("Please ensure your Current CGPA and Total Credit Hours are valid numbers.", 'error');
                 return;
             }
 
             const activeScale = getActiveScale();
             const maxGradePoint = Math.max(...activeScale.grades.map(g => g.points));
             if (currentCGPA > maxGradePoint) {
-                document.getElementById('error-message').innerHTML = `Current CGPA (${currentCGPA.toFixed(2)}) cannot exceed the maximum grade point (${maxGradePoint.toFixed(2)}) in your selected scale.`;
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification(`Current CGPA (${currentCGPA.toFixed(2)}) cannot exceed the maximum grade point (${maxGradePoint.toFixed(2)}) in your selected scale.`, 'error');
                 return;
             }
 
@@ -1172,22 +1173,19 @@
             const added = getSubjectTotals('subjects-to-add-container');
 
             if (!dropped.isValid || !added.isValid) {
-                document.getElementById('error-message').innerHTML = "Please check all Credit Hour inputs in both sections (Credit Hours must be between 1 and 15).";
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification("Please check all Credit Hour inputs in both sections (Credit Hours must be between 1 and 15).", 'error');
                 return;
             }
 
             const currentTotalQP = currentCGPA * currentTotalCH;
 
             if (dropped.ch > currentTotalCH) {
-                document.getElementById('error-message').innerHTML = `Cannot drop ${dropped.ch} credit hours when you only have ${currentTotalCH} total credit hours.`;
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification(`Cannot drop ${dropped.ch} credit hours when you only have ${currentTotalCH} total credit hours.`, 'error');
                 return;
             }
 
             if (dropped.qp > currentTotalQP) {
-                document.getElementById('error-message').innerHTML = `Warning: The quality points you're trying to drop (${dropped.qp.toFixed(2)}) exceed your current total quality points (${currentTotalQP.toFixed(2)}). This suggests the dropped subjects had higher grades than your current average. Please verify your entries.`;
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification(`Warning: The quality points you're trying to drop (${dropped.qp.toFixed(2)}) exceed your current total quality points (${currentTotalQP.toFixed(2)}). This suggests the dropped subjects had higher grades than your current average. Please verify your entries.`, 'error');
                 return;
             }
 
@@ -1197,8 +1195,7 @@
             let newCGPA;
 
             if (newTotalCH < 0) {
-                document.getElementById('error-message').innerHTML = "Error: The resulting total credit hours is negative. You cannot drop more credits than you add.";
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification("Error: The resulting total credit hours is negative. You cannot drop more credits than you add.", 'error');
                 return;
             }
 
@@ -1206,8 +1203,7 @@
                 if (newTotalQP === 0) {
                     newCGPA = 0;
                 } else {
-                    document.getElementById('error-message').innerHTML = "Error: Cannot have quality points without credit hours.";
-                    document.getElementById('error-message').classList.remove('hidden');
+                    showNotification("Error: Cannot have quality points without credit hours.", 'error');
                     return;
                 }
             } else {
@@ -1215,8 +1211,7 @@
             }
 
             if (newCGPA > maxGradePoint + 0.01) {
-                document.getElementById('error-message').innerHTML = `Calculated CGPA (${newCGPA.toFixed(4)}) exceeds maximum possible (${maxGradePoint.toFixed(2)}). Please check your inputs.`;
-                document.getElementById('error-message').classList.remove('hidden');
+                showNotification(`Calculated CGPA (${newCGPA.toFixed(4)}) exceeds maximum possible (${maxGradePoint.toFixed(2)}). Please check your inputs.`, 'error');
                 return;
             }
 
@@ -1225,7 +1220,6 @@
             const newTotalCHValue = document.getElementById('newTotalCHValue');
             const addedCHEl = document.getElementById('addedCH');
             const droppedCHEl = document.getElementById('droppedCH');
-            const netChangeCHEl = document.getElementById('netChangeCH');
             const messageElement = document.getElementById('message');
 
             // Calculate GPA for added subjects only
@@ -1235,13 +1229,10 @@
             }
 
             newCGPAValue.textContent = newCGPA.toFixed(4);
-            document.getElementById('newGPAValue').textContent = added.ch > 0 ? newGPA.toFixed(4) : 'N/A';
+            document.getElementById('newGPAValue').textContent = added.ch > 0 ? newGPA.toFixed(4) : '0.0000';
             newTotalCHValue.textContent = newTotalCH;
             addedCHEl.textContent = `+${added.ch}`;
             droppedCHEl.textContent = `-${dropped.ch}`;
-
-            const netChange = added.ch - dropped.ch;
-            netChangeCHEl.textContent = netChange >= 0 ? `+${netChange}` : `${netChange}`;
 
             if (currentCGPA === 0 && currentTotalCH === 0) {
                 messageElement.textContent = "Your starting CGPA has been calculated.";
